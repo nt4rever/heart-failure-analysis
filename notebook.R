@@ -52,3 +52,21 @@ ggMarginal(Cholesterol_plot, type = "histogram",  groupColour = TRUE, groupFill 
 heart_dft_chol_n0 <- filter(df, Cholesterol> 0)
 
 ggplot(heart_dft_chol_n0) + geom_point(aes(x = Age, y = Cholesterol, color = Sex)) + geom_smooth(aes(x = Age, y = Cholesterol, color = Sex),method = "lm", formula = y ~ x)
+
+
+HeartDisease_df <- df %>% select(HeartDisease)  %>% group_by(HeartDisease) %>%
+  summarise(Count = n(),
+            .groups = 'drop')
+
+HeartDisease_df$Pct <- round(HeartDisease_df$Count / sum(HeartDisease_df$Count), 2)*100
+HeartDisease_df$HeartDisease <- as.factor(HeartDisease_df$HeartDisease)
+HeartDisease_plot <-
+  ggplot(HeartDisease_df, aes(x = HeartDisease, y = Pct, fill = HeartDisease)) + geom_bar(stat = "identity") + geom_text(aes(label = Pct, y = Pct +2)) + theme_minimal() + labs(title = "Acceptably balanced target variable")
+HeartDisease_plot
+
+# ------- 
+HeartDisease_by_Sex_df <- df %>% select(Sex, HeartDisease) %>% group_by(Sex, HeartDisease) %>%  summarise(Count = n(),.groups = 'drop')
+
+HeartDisease_by_Sex_df$HeartDisease <- as.factor(HeartDisease_by_Sex_df$HeartDisease)
+
+ggplot(data = HeartDisease_by_Sex_df, aes(x = Sex, fill = HeartDisease, y = Count)) + geom_bar(stat = "identity", position = "dodge")+ geom_text(aes(label = Count, y = Count +10, group= HeartDisease),position = position_dodge(width = .9)) + theme_minimal() + theme_minimal()

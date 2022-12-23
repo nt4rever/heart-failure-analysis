@@ -183,7 +183,8 @@ heart_dft_chol_n0_plot <-
                                                                                                    formula = y ~ x)
 
 # 12. Heart Disease vs Maximum Heart Rate
-hd_vs_maxhr <- ggplot(df, aes(x = MaxHR, y = HeartDisease, color = Sex)) +
+hd_vs_maxhr <-
+  ggplot(df, aes(x = MaxHR, y = HeartDisease, color = Sex)) +
   geom_point() +
   geom_smooth(method = lm,
               se = FALSE,
@@ -221,6 +222,43 @@ Test <- subset(df_model, split == FALSE)
 model_logistic <-
   glm(HeartDisease ~ ., data = Train, family = binomial)
 # ----END-----
+
+# ----Linear regression----
+
+# find best model
+
+# define intercept only model
+intercept_only <-
+  lm(as.formula(paste("HeartDisease", "~1", sep = "")), data = df_model)
+#define model with all predictors
+all <-
+  lm(as.formula(paste("HeartDisease", "~.", sep = "")), data = df_model)
+#perform forward stepwise regression
+
+forward <-
+  step(
+    intercept_only,
+    direction = "forward",
+    scope = formula(all),
+    trace = 0
+  )
+
+# backward stepwise regression
+backward <-
+  step(all,
+       direction = "backward",
+       scope = formula(all),
+       trace = 0)
+
+# both
+both <-
+  step(
+    intercept_only,
+    direction = "both",
+    scope = formula(all),
+    trace = 0
+  )
+# ----END----
 
 # shiny app
 source("./ui.R")
@@ -340,6 +378,84 @@ server <- function(input, output) {
     })
     confusionMatrix(data = predict_res,
                     reference = as.factor(Test$HeartDisease))
+  })
+  
+  # linear regression
+  output$uiSelectVarLinear <- renderUI({
+    checkboxGroupInput(
+      'linearIndependentVar',
+      "Select the independent variables you would like to include:",
+      names(select(df_model,-HeartDisease))
+    )
+  })
+  
+  output$equationLinear <-  renderText("Equation: NULL")
+  
+  observeEvent(input$buttonVarLinear, {
+    linear_model = lm(as.formula(paste(
+      "HeartDisease~",
+      paste(input$linearIndependentVar, collapse = "+"),
+      sep = ""
+    )), data = df_model)
+    
+    output$modelVarLinear <- renderPrint({
+      text = extract_eq(
+        linear_model,
+        use_coefs = TRUE,
+        # display coefficients
+        wrap = TRUE,
+        # multiple lines
+        terms_per_line = 5
+      )
+      output$equationLinear <- renderUI({
+        withMathJax(tags$p(text))
+      })
+      
+      output$linearPlot <- renderPlot({
+        visreg(linear_model)
+      })
+      summary(linear_model)
+    })
+  })
+  
+  output$equationLinearBackward <- renderUI({
+    text = extract_eq(
+      backward,
+      use_coefs = TRUE,
+      # display coefficients
+      wrap = TRUE,
+      # multiple lines
+      terms_per_line = 5
+    )
+    withMathJax(tags$p(text))
+  })
+  
+  output$equationLinearForward <- renderUI({
+    text = extract_eq(
+      forward,
+      use_coefs = TRUE,
+      # display coefficients
+      wrap = TRUE,
+      # multiple lines
+      terms_per_line = 5
+    )
+    withMathJax(tags$p(text))
+  })
+  
+  output$equationLinearBoth <- renderUI({
+    text = extract_eq(
+      both,
+      use_coefs = TRUE,
+      # display coefficients
+      wrap = TRUE,
+      # multiple lines
+      terms_per_line = 5
+    )
+    withMathJax(tags$p(text))
+  })
+  
+  output$linear_best_model_compare <- renderPrint({
+    performance::compare_performance(forward, backward, both, rank = TRUE)
   })
 }
 

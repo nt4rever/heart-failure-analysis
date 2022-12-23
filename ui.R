@@ -302,7 +302,31 @@ ui <- dashboardPage(
           )
         )
       ),
-      tabItem(tabName = "linear", fluidPage(h1("linear"))),
+      tabItem(tabName = "linear", fluidPage(
+        box(
+          width = 3,
+          uiOutput('uiSelectVarLinear'),
+          actionButton("buttonVarLinear", "Submit")
+        ),
+        box(
+          width = 9,
+          title = "Model",
+          tags$div(class = "equation", uiOutput('equationLinear')),
+          verbatimTextOutput("modelVarLinear"),
+          plotOutput("linearPlot")
+        )
+      ), fluidPage(
+        h3("Find best linear regression model"),
+        h4("1. Equations"),
+        tags$div(
+          class = "linear__best__equation",
+          tags$div(class = "equation", p("Backward:"), uiOutput('equationLinearBackward')),
+          tags$div(class = "equation", p("Forward:"), uiOutput('equationLinearForward')),
+          tags$div(class = "equation", p("Both:"), uiOutput('equationLinearBoth')),
+        ),
+        h4("2. Compare performance"),
+        verbatimTextOutput('linear_best_model_compare')
+      )),
       tabItem(
         tabName = "logistic",
         fluidPage(
@@ -322,8 +346,6 @@ ui <- dashboardPage(
             verbatimTextOutput("predictModelLogistic"),
           ),
           box(plotOutput("logistic_plot"))),
-          plotOutput("logisticRegressionPlot"),
-          
         )
       )
     )

@@ -6,3 +6,13 @@
 .center {
   text-align: center;
 }
+
+.linear__best__equation .equation > p {
+  font-size: 16px;
+}
+
+.linear__best__equation .equation {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}

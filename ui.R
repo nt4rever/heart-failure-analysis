@@ -22,6 +22,7 @@ ui <- dashboardPage(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
+    tags$script(HTML("$('body').addClass('fixed');")),
     tabItems(
       tabItem(tabName = "dataset",
               DTOutput("dataset"),
@@ -46,28 +47,42 @@ ui <- dashboardPage(
                   )),
                   tabPanel("Attribute Information", tags$div(
                     tags$ol(
-                      tags$li("Age: age of the patient [years]"),
-                      tags$li("Sex: sex of the patient [M: Male, F: Female]"),
+                      tags$li(tags$b("Age"), ": age of the patient [years]"),
+                      tags$li(tags$b("Sex"), ": sex of the patient [M: Male, F: Female]"),
                       tags$li(
-                        "ChestPainType: chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: Non-Anginal Pain, ASY: Asymptomatic]"
+                        tags$b("ChestPainType"),
+                        ": chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: Non-Anginal Pain, ASY: Asymptomatic]"
                       ),
-                      tags$li("RestingBP: resting blood pressure [mm Hg]"),
-                      tags$li("Cholesterol: serum cholesterol [mm/dl]"),
+                      tags$li(tags$b("RestingBP"), ": resting blood pressure [mm Hg]"),
+                      tags$li(tags$b("Cholesterol"), ": serum cholesterol [mm/dl]"),
                       tags$li(
-                        "FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]"
+                        tags$b("FastingBS"),
+                        ": fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]"
                       ),
                       tags$li(
-                        "RestingECG: resting electrocardiogram results [Normal: Normal, ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]"
+                        tags$b("RestingECG"),
+                        ": resting electrocardiogram results [Normal: Normal, ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]"
                       ),
                       tags$li(
-                        "MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]"
+                        tags$b("MaxHR"),
+                        ": maximum heart rate achieved [Numeric value between 60 and 202]"
                       ),
-                      tags$li("ExerciseAngina: exercise-induced angina [Y: Yes, N: No]"),
-                      tags$li("Oldpeak: oldpeak = ST [Numeric value measured in depression]"),
                       tags$li(
-                        "ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, Down: downsloping]"
+                        tags$b("ExerciseAngina"),
+                        ": exercise-induced angina [Y: Yes, N: No]"
                       ),
-                      tags$li("HeartDisease: output class [1: heart disease, 0: Normal]")
+                      tags$li(
+                        tags$b("Oldpeak"),
+                        ": oldpeak = ST [Numeric value measured in depression]"
+                      ),
+                      tags$li(
+                        tags$b("ST_Slope"),
+                        ": the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, Down: downsloping]"
+                      ),
+                      tags$li(
+                        tags$b("HeartDisease"),
+                        ": output class [1: heart disease, 0: Normal]"
+                      )
                     )
                   )),
                   tabPanel("Source", tags$div(
@@ -98,155 +113,219 @@ ui <- dashboardPage(
                         tags$li("Seven(7) numeric variables and five(5) variables type object"),
                         tags$li("No missing data in this Dataset")
                       )
-                    ),
-                    # verbatimTextOutput("summaryDataset")
+                    )
                   ))
                 )
               )),
-      tabItem(tabName = "chart",
-              fluidRow(
-                box(
-                  width = 6,
-                  collapsible = TRUE,
-                  title = "Age Variable",
-                  plotOutput("age_plot", height = 400)
-                ),
-                box(
-                  width = 6,
-                  title = 'HeartDisease Varible (Dependent Variable)',
-                  collapsible = TRUE,
-                  plotOutput('HeartDisease_plot', height = 400)
-                ),
-              ),
-              fluidRow(
-                column(
-                  width = 6,
-                  box(
-                    title = "Sex Bar Plot",
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('sex_plot'),
-                    tags$div(class = "plot__container", tags$p(tags$b("Observation:")), tags$ul(
-                      tags$li("Imbalanced data in terms of the Sex variable")
-                    ))
-                  ),
-                  box(
-                    title = "ExerciseAngina",
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('ExerciseAngina_vs_Sex_plot'),
-                    tags$div(class = "plot__container", tags$p(tags$b("Note:")), tags$ul(
-                      tags$li(
-                        "ExerciseAngina: exercise-induced angina [Y: Yes, N: No] Angina is a type of chest pain caused by reduced blood flow to the heart"
-                      )
-                    ))
-                  ),
-                  box(
-                    title = "ST_Slope",
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('ST_Slope_vs_Sex_plot'),
-                    tags$div(class = "plot__container", tags$p(tags$b("Note:")), tags$ul(
-                      tags$li(
-                        "ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, Down: downsloping] Mainly Flat in (Males) and relatively Up in (Females)"
-                      )
-                    ))
-                  ),
-                  box(
-                    title = 'heart_dft_chol_n0_plot',
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('heart_dft_chol_n0_plot'),
-                    tags$div(class = "plot__container", tags$p(tags$b("Observations:")), tags$ul(
-                      tags$li(
-                        "We may need to do some t-test to check whether the true means difference is equal to 0 or Not. we can scipy package to do that, but for now, let's move on..."
-                      )
-                    ))
-                  ),
-                ),
-                column(
-                  width = 6,
-                  box(
-                    title = "ChestPainType Vs Sex",
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('ChestPainType_vs_Sex_plot'),
-                  ),
-                  box(
-                    title = "RestingECG",
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('RestingECG_vs_Sex_plot'),
-                    tags$div(
-                      class = "plot__container",
-                      tags$p(tags$b("Observations:")),
-                      tags$ul(
-                        tags$li(
-                          "ChestPainType: chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: Non-Anginal Pain, ASY: Asymptomatic]"
-                        )
-                      ),
-                      p("The majority 46% of the Male participants are in ASY category"),
-                      tags$ul(
-                        tags$li(
-                          "RestingBP: resting blood pressure taking a rest for min five(5) minutes before blood pressure measurement"
-                        )
-                      ),
-                      p("The majority of the participants are in the Normal category"),
-                      p(
-                        "Note: The percentage is calculated using all participants, NOT within each group of Sex"
-                      )
-                    )
-                  ),
-                  box(
-                    title = 'Numeric Vars ("Age", "Cholesterol", "MaxHR", "Oldpeak")',
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('Cholesterol_point_plot'),
-                    tags$div(
-                      class = "plot__container",
-                      tags$p(tags$b("Observations:")),
-                      tags$ul(
-                        tags$li(
-                          "It is somehow the same pattern for Male and Female relative to their counts!"
-                        ),
-                        tags$li("We have many of 0 values in the Cholesterol var!!"),
-                        tags$li("Let's use lmplot to see the regression line of each group."),
-                        tags$li(
-                          "I think we have to remove the 0 values in the Cholesterol var and check again!"
-                        )
-                      )
-                    )
-                  ),
-                  box(
-                    title = 'HeartDisease_by_Sex',
-                    width = NULL,
-                    collapsible = TRUE,
-                    plotOutput('HeartDisease_by_Sex_plot'),
-                    tags$div(class = "plot__container",
-                             tags$p(tags$b("Note:")),
-                             tags$ul(
-                               tags$li(
-                                 "According to this dataset, 26% of females have developed Heart Disease, and 74% Have not."
-                               ),
-                               tags$li("63% of Males have developed Heart Disease, and 37% have not.")
-                             ))
-                  ),
-                  
-                )
-              )),
+      tabItem(
+        tabName = "chart",
+        fluidRow(
+          box(
+            width = 6,
+            collapsible = TRUE,
+            title = "Age distribution",
+            plotOutput("age_plot", height = 400)
+          ),
+          box(
+            title = "Distribution of sex among patients",
+            width = 6,
+            collapsible = TRUE,
+            plotOutput('sex_plot', height = 400)
+          ),
+        ),
+        fluidRow(
+          box(
+            width = 6,
+            title = 'Cases of HeartDisease',
+            collapsible = TRUE,
+            plotOutput('HeartDisease_plot', height = 400)
+          ),
+          box(
+            width = 6,
+            title = 'HeartDisease %',
+            collapsible = TRUE,
+            plotOutput('HeartDisease_plot_pie', height = 400)
+          )
+        ),
+        fluidRow(
+          column(
+            width = 6,
+            box(
+              title = 'Sex vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('HeartDisease_by_Sex_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "Male population has more heart disease patients than no heart disease patients. In the case of Female population, heart disease patients are less than no heart disease patients."
+                         )
+                       ))
+            ),
+            box(
+              title = 'FastingBS vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('FastingBS_vs_HeartDisease_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "Fasting Blood Sugar is tricky! Patients diagnosed with Fasting Blood Sugar and no Fasting Blood Sugar have significant heart disease patients."
+                         )
+                       ))
+            ),
+            box(
+              title = 'ExerciseAngina vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('ExerciseAngina_vs_HeartDisease_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "Exercise Induced Engina definitely bumps the probability of being diagnosed with heart diseases."
+                         )
+                       ))
+            ),
+            box(
+              title = 'Plotting the density of Cholesterol by genders',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('Cholesterol_by_gender_plot')
+            ),
+          ),
+          column(
+            width = 6,
+            box(
+              title = 'ChestPainType vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('ChestPainType_vs_HeartDisease_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "ASY type of chest pain boldly points towards major chances of heart disease."
+                         )
+                       ))
+            ),
+            box(
+              title = 'RestingECG vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('RestingECG_vs_HeartDisease_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "RestingECG does not present with a clear cut category that highlights heart disease patients. All the 3 values consist of high number of heart disease patients."
+                         )
+                       ))
+            ),
+            box(
+              title = 'ST_Slope vs HeartDisease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('ST_Slope_vs_HeartDisease_plot'),
+              tags$div(class = "plot__container",
+                       tags$p(tags$b("Note:")),
+                       tags$ul(
+                         tags$li(
+                           "With the ST_Slope values, flat slope displays a very high probability of being diagnosed with heart disease. Down also shows the same output but in very few data points."
+                         )
+                       ))
+            ),
+            box(
+              title = 'Age vs Heart disease',
+              width = NULL,
+              collapsible = TRUE,
+              plotOutput('hd_vs_age')
+            ),
+          )
+        ),
+        fluidRow(
+          box(
+            title = 'Cholesterol and Age',
+            width = 6,
+            collapsible = TRUE,
+            plotOutput('Cholesterol_point_plot')
+          ),
+          box(
+            title = 'Cholesterol and Age (remove 0 value)',
+            width = 6,
+            collapsible = TRUE,
+            plotOutput('heart_dft_chol_n0_plot')
+          ),
+          
+        ),
+        fluidRow(
+          box(
+            title = 'Heart Disease vs Maximum Heart Rate',
+            width = 6,
+            collapsible = TRUE,
+            plotOutput('hd_vs_maxhr'),
+            p(
+              "As expected, people with heart disease have less maximum heart rate recorded. This could be due to the actual diseases, which could deteriorate the heart or, it could be due to the medicine making heart rate stay low, for example patients who suffer from tachycardias."
+            )
+          ),
+          box(
+            title = 'Heart Diseases vs Sugar Blood Level',
+            width = 6,
+            collapsible = TRUE,
+            plotOutput('hd_vs_sugar'),
+            p(
+              "Patients with heart diseases had higher levels of blood sugar. This is expected."
+            )
+          )
+        ),
+        fluidPage(
+          h3("Conclusions"),
+          p(
+            "As we have seen, this data set has predomenately male patients. This could represent that men are more likely to have a heart failure, but the sample is not big enough to reach that conclusion."
+          ),
+          p(
+            "Most patients fall between the ages of 50 and 65 years old, where men are more clustered in that range, and women are more distributed. We can see a pattern where male patients above 50 years are more likely to have a heart failure, while age is not that big of a factor for women."
+          ),
+          p(
+            "Almost 500 patients didn't have any symptoms when they had the failure, which represents more than 50% of total patients. Male patients are exponentially more asymptomatic than women, where women have a more distributed chest pain type."
+          ),
+          p(
+            "This is very important information, specially for men, meaning that men who are 50 years or older, must be very aware that at any point they are very likely to suffer a heart attack. Heart failure awareness campaigns should focus on that group of the population."
+          ),
+          p(
+            "Heart diseases don't play an important role on women, since only 28% had a previous heart disease. Men on the other hand, tend to have more heart diseases, 63% of them had at least one related disease."
+          ),
+          p(
+            "Patients had a strong correlation between blood sugar level and heart disease, meaning that it could be a cause for more heart failures if people don't raise awareness on high level sugar foods and drinks."
+          )
+        )
+      ),
       tabItem(tabName = "linear", fluidPage(h1("linear"))),
-      tabItem(tabName = "logistic", fluidPage(
-        h4("1. Normalize data"),
-        DTOutput("datasetModel"),
-        verbatimTextOutput("strDfModel"),
-        h4("2. Split The Data"),
-        p("The approach here will use Cross Validation on 80% of the dataset, and then judge the results on a final test set of 20% to evaluate the model."),
-        h4("3. Summary logistic regression model with all variable"),
-        verbatimTextOutput("summaryLogisticModelAllVar"),
-        h4("4. Model Evaluation"),
-        verbatimTextOutput("predictModelLogistic"),
-        plotOutput("logistic_plot")
-      ))
+      tabItem(
+        tabName = "logistic",
+        fluidPage(
+          h4("1. Normalize data"),
+          DTOutput("datasetModel"),
+          br(),
+          verbatimTextOutput("strDfModel"),
+          h4("2. Split The Data"),
+          p(
+            "The approach here will use Cross Validation on 80% of the dataset, and then judge the results on a final test set of 20% to evaluate the model."
+          ),
+          h4("3. Summary logistic regression model with all variable"),
+          verbatimTextOutput("summaryLogisticModelAllVar"),
+          uiOutput("equationLogistic"),
+          h4("4. Model Evaluation"),
+          fluidRow(box(
+            verbatimTextOutput("predictModelLogistic"),
+          ),
+          box(plotOutput("logistic_plot"))),
+          plotOutput("logisticRegressionPlot"),
+          
+        )
+      )
     )
   )
 )

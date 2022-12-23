@@ -1,26 +1,30 @@
 ui <- dashboardPage(
   dashboardHeader(title = "Heart Failure Analysis"),
-  dashboardSidebar(sidebarMenu(
-    menuItem("Dataset", tabName = "dataset", icon = icon("table")),
-    menuItem("Chart", tabName = "chart", icon = icon("chart-pie")),
-    menuItem(
-      "Linear Regression",
-      tabName = "linear",
-      icon = icon("chart-line"),
-      badgeLabel = "New",
-      badgeColor = "green"
-    ),
-    menuItem(
-      "Logistic Regression",
-      tabName = "logistic",
-      icon = icon("chart-column"),
-      badgeLabel = "New",
-      badgeColor = "green"
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Dataset", tabName = "dataset", icon = icon("table")),
+      menuItem("Chart", tabName = "chart", icon = icon("chart-pie")),
+      menuItem(
+        "Linear Regression",
+        tabName = "linear",
+        icon = icon("chart-line"),
+        badgeLabel = "New",
+        badgeColor = "green"
+      ),
+      menuItem(
+        "Logistic Regression",
+        tabName = "logistic",
+        icon = icon("chart-column"),
+        badgeLabel = "New",
+        badgeColor = "green"
+      ),
+      menuItem("About Us", tabName = "about", icon = icon("address-card"))
     )
-  )),
+  ),
   dashboardBody(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
+      tags$link(rel = "stylesheet", type = "text/css", href = "about.css")
     ),
     tags$script(HTML("$('body').addClass('fixed');")),
     tabItems(
@@ -302,31 +306,35 @@ ui <- dashboardPage(
           )
         )
       ),
-      tabItem(tabName = "linear", fluidPage(
-        box(
-          width = 3,
-          uiOutput('uiSelectVarLinear'),
-          actionButton("buttonVarLinear", "Submit")
+      tabItem(
+        tabName = "linear",
+        fluidPage(
+          box(
+            width = 3,
+            uiOutput('uiSelectVarLinear'),
+            actionButton("buttonVarLinear", "Submit")
+          ),
+          box(
+            width = 9,
+            title = "Model",
+            tags$div(class = "equation", uiOutput('equationLinear')),
+            verbatimTextOutput("modelVarLinear"),
+            plotOutput("linearPlot")
+          )
         ),
-        box(
-          width = 9,
-          title = "Model",
-          tags$div(class = "equation", uiOutput('equationLinear')),
-          verbatimTextOutput("modelVarLinear"),
-          plotOutput("linearPlot")
+        fluidPage(
+          h3("Find best linear regression model"),
+          h4("1. Equations"),
+          tags$div(
+            class = "linear__best__equation",
+            tags$div(class = "equation", p("Backward:"), uiOutput('equationLinearBackward')),
+            tags$div(class = "equation", p("Forward:"), uiOutput('equationLinearForward')),
+            tags$div(class = "equation", p("Both:"), uiOutput('equationLinearBoth')),
+          ),
+          h4("2. Compare performance"),
+          verbatimTextOutput('linear_best_model_compare')
         )
-      ), fluidPage(
-        h3("Find best linear regression model"),
-        h4("1. Equations"),
-        tags$div(
-          class = "linear__best__equation",
-          tags$div(class = "equation", p("Backward:"), uiOutput('equationLinearBackward')),
-          tags$div(class = "equation", p("Forward:"), uiOutput('equationLinearForward')),
-          tags$div(class = "equation", p("Both:"), uiOutput('equationLinearBoth')),
-        ),
-        h4("2. Compare performance"),
-        verbatimTextOutput('linear_best_model_compare')
-      )),
+      ),
       tabItem(
         tabName = "logistic",
         fluidPage(
@@ -347,7 +355,56 @@ ui <- dashboardPage(
           ),
           box(plotOutput("logistic_plot"))),
         )
-      )
+      ),
+      tabItem(tabName = "about",
+              fluidPage(
+                tags$div(
+                  class = "about__container",
+                  tags$div(class = "about__logo",
+                           img(src = "logo_vku.png")),
+                  tags$div(class = "about__topic",
+                           h3("Topic:"),
+                           h2("Heart Failure Analysis")),
+                  tags$div(class = "about__profile",
+                           h3("Group"),
+                           tags$div(
+                             class = "stack",
+                             tags$div(
+                               class = "left card",
+                               tags$div(
+                                 class = "about__content",
+                                 tags$div(class = "ellipse-1"),
+                                 tags$div(class = "ellipse-2"),
+                                 tags$div(class = "avatar", img(src = "ly.jpg")),
+                                 tags$div(class = "info", h4("Nguyen Thi Truc Ly"))
+                                 
+                               )
+                             ),
+                             tags$div(
+                               class = "center card",
+                               tags$div(
+                                 class = "about__content",
+                                 tags$div(class = "ellipse-1"),
+                                 tags$div(class = "ellipse-2"),
+                                 tags$div(class = "avatar", img(src = "tan.jpg")),
+                                 tags$div(class = "info", h4("Le Van Tan"))
+                                 
+                               )
+                             ),
+                             tags$div(
+                               class = "right card",
+                               tags$div(
+                                 class = "about__content",
+                                 tags$div(class = "ellipse-1"),
+                                 tags$div(class = "ellipse-2"),
+                                 tags$div(class = "avatar", img(src = "tai.jpg")),
+                                 tags$div(class = "info", h4("Dang Quang Tai"))
+                                 
+                               )
+                             )
+                           ))
+                )
+              ))
     )
   )
 )

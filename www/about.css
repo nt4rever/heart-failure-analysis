@@ -1,4 +1,5 @@
 .about__container {
+  position: relative;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -161,3 +162,15 @@
   font-size: 28px;
 }
 
+.about__decor {
+      width: 200px;
+    height: 200px;
+    position: absolute;
+    bottom: 0;
+    right: 0px;
+    z-index: 10;
+}
+
+.about__decor img{
+  width: 100%;
+}

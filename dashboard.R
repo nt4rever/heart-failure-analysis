@@ -8,7 +8,7 @@ library(caret)
 library(ROCR)
 library(caTools)
 library(equatiomatic)
-library(visreg)
+# library(epiDisplay)
 
 # ----DATATSET----
 # read data from csv file
@@ -346,6 +346,7 @@ server <- function(input, output) {
   
   output$summaryLogisticModelAllVar <- renderPrint({
     summary(model_logistic)
+    # epiDisplay::logistic.display(model_logistic)
   })
   
   output$equationLogistic <- renderUI({
@@ -380,6 +381,26 @@ server <- function(input, output) {
                     reference = as.factor(Test$HeartDisease))
   })
   
+  output$uiSelectVarLogisticPlot <- renderUI({
+    selectInput(
+      'logisticIndependentVarPlot',
+      "Select the independent variables you would like to plot:",
+      choices = names(select(df_model,-HeartDisease))
+    )
+  })
+  
+  observeEvent(input$logisticIndependentVarPlot, {
+    if (!is.null(input$logisticIndependentVarPlot))
+      output$uiLogisticPlot <- renderUI({
+        renderPlot({
+          ggplot(df_model,
+                 aes_string(x = input$logisticIndependentVarPlot, y = "HeartDisease")) + geom_point(alpha = 0.15) + geom_smooth(method = "glm",
+                                                                                                    method.args = list(family = "binomial"))
+        })
+      })
+    
+  })
+  
   # linear regression
   output$uiSelectVarLinear <- renderUI({
     checkboxGroupInput(
@@ -389,33 +410,62 @@ server <- function(input, output) {
     )
   })
   
-  output$equationLinear <-  renderText("Equation: NULL")
+  output$uiSelectVarLinearPlot <- renderUI({
+    selectInput(
+      'linearIndependentVarPlot',
+      "Select the independent variables you would like to plot:",
+      choices = names(select(df_model,-HeartDisease))
+    )
+  })
+  
+  observeEvent(input$linearIndependentVarPlot, {
+    if (!is.null(input$linearIndependentVarPlot))
+      output$uiLinearPlot <- renderUI({
+        renderPlot({
+          ggplot(
+            df_model,
+            aes_string(
+              x = input$linearIndependentVarPlot,
+              y = "HeartDisease",
+              color = "Sex"
+            )
+          ) +
+            geom_point() +
+            geom_smooth(method = lm,
+                        se = FALSE,
+                        formula = y ~ x)
+        })
+      })
+  })
+  
+  
+  output$equationLinear <- renderText("Equation: NULL")
   
   observeEvent(input$buttonVarLinear, {
-    linear_model = lm(as.formula(paste(
-      "HeartDisease~",
-      paste(input$linearIndependentVar, collapse = "+"),
-      sep = ""
-    )), data = df_model)
-    
-    output$modelVarLinear <- renderPrint({
-      text = extract_eq(
-        linear_model,
-        use_coefs = TRUE,
-        # display coefficients
-        wrap = TRUE,
-        # multiple lines
-        terms_per_line = 5
-      )
-      output$equationLinear <- renderUI({
-        withMathJax(tags$p(text))
-      })
+    if (!is.null(input$linearIndependentVar)) {
+      formula = as.formula(paste(
+        "HeartDisease~",
+        paste(input$linearIndependentVar, collapse = "+"),
+        sep = ""
+      ))
       
-      output$linearPlot <- renderPlot({
-        visreg(linear_model)
+      linear_model = lm(formula, data = df_model)
+      
+      output$modelVarLinear <- renderPrint({
+        text = extract_eq(
+          linear_model,
+          use_coefs = TRUE,
+          # display coefficients
+          wrap = TRUE,
+          # multiple lines
+          terms_per_line = 5
+        )
+        output$equationLinear <- renderUI({
+          withMathJax(tags$p(text))
+        })
+        summary(linear_model)
       })
-      summary(linear_model)
-    })
+    }
   })
   
   output$equationLinearBackward <- renderUI({

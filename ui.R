@@ -309,6 +309,13 @@ ui <- dashboardPage(
       tabItem(
         tabName = "linear",
         fluidPage(
+          h4("1. Preprocessing data"),
+          DTOutput("datasetModel"),
+          br(),
+          verbatimTextOutput("strDfModel"),
+        ),
+        fluidPage(
+          h4("2. Linear regresison model"),
           box(
             width = 3,
             uiOutput('uiSelectVarLinear'),
@@ -318,38 +325,41 @@ ui <- dashboardPage(
             width = 9,
             title = "Model",
             tags$div(class = "equation", uiOutput('equationLinear')),
-            verbatimTextOutput("modelVarLinear"),
-            plotOutput("linearPlot")
+            verbatimTextOutput("modelVarLinear")
           )
         ),
         fluidPage(
-          h3("Find best linear regression model"),
-          h4("1. Equations"),
+          uiOutput('uiSelectVarLinearPlot'),
+          uiOutput('uiLinearPlot')
+        ),
+        fluidPage(
+          h4("3. Find best linear regression model"),
+          h4("3.1. Equations"),
           tags$div(
             class = "linear__best__equation",
             tags$div(class = "equation", p("Backward:"), uiOutput('equationLinearBackward')),
             tags$div(class = "equation", p("Forward:"), uiOutput('equationLinearForward')),
             tags$div(class = "equation", p("Both:"), uiOutput('equationLinearBoth')),
           ),
-          h4("2. Compare performance"),
+          h4("3.2. Compare performance"),
           verbatimTextOutput('linear_best_model_compare')
         )
       ),
       tabItem(
         tabName = "logistic",
         fluidPage(
-          h4("1. Normalize data"),
-          DTOutput("datasetModel"),
-          br(),
-          verbatimTextOutput("strDfModel"),
-          h4("2. Split The Data"),
+          fluidPage(
+            uiOutput('uiSelectVarLogisticPlot'),
+            uiOutput('uiLogisticPlot')
+          ),
+          h4("1. Split The Data"),
           p(
             "The approach here will use Cross Validation on 80% of the dataset, and then judge the results on a final test set of 20% to evaluate the model."
           ),
-          h4("3. Summary logistic regression model with all variable"),
+          h4("2. Summary logistic regression model with all variable"),
           verbatimTextOutput("summaryLogisticModelAllVar"),
           uiOutput("equationLogistic"),
-          h4("4. Model Evaluation"),
+          h4("3. Model Evaluation"),
           fluidRow(box(
             verbatimTextOutput("predictModelLogistic"),
           ),
@@ -360,6 +370,7 @@ ui <- dashboardPage(
               fluidPage(
                 tags$div(
                   class = "about__container",
+                  tags$div(class = "about__decor", img(src = "caythong.png")),
                   tags$div(class = "about__logo",
                            img(src = "logo_vku.png")),
                   tags$div(class = "about__topic",

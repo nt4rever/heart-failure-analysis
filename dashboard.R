@@ -221,6 +221,8 @@ Test <- subset(df_model, split == FALSE)
 
 model_logistic <-
   glm(HeartDisease ~ ., data = Train, family = binomial)
+# model_logistic <-
+#   glm(HeartDisease ~ Sex + ChestPainType + Cholesterol + FastingBS + MaxHR + ExerciseAngina + Oldpeak + ST_Slope, data = Train, family = binomial)
 # ----END-----
 
 # ----Linear regression----
@@ -369,6 +371,7 @@ server <- function(input, output) {
     
     ROCRpred <- prediction(pred_, Test$HeartDisease)
     ROCperf <- performance(ROCRpred, "tpr", "fpr")
+
     output$logistic_plot <- renderPlot({
       plot(
         ROCperf,
@@ -379,6 +382,7 @@ server <- function(input, output) {
     })
     confusionMatrix(data = predict_res,
                     reference = as.factor(Test$HeartDisease))
+    # as.numeric(performance(ROCRpred, "auc")@y.values)
   })
   
   output$uiSelectVarLogisticPlot <- renderUI({
